@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/konradmalik/kmls/rpc"
+	"github.com/konradmalik/kmls/tests"
 )
 
 type EncodingExample struct {
@@ -13,7 +14,6 @@ type EncodingExample struct {
 func TestEncode(t *testing.T) {
 	expected := "Content-Length: 16\r\n\r\n{\"Testing\":true}"
 	actual := rpc.EncodeMessage(EncodingExample{Testing: true})
-	if expected != actual {
-		t.Fatalf("Expected: %s, actual: %s", expected, actual)
-	}
+
+	tests.AssertStrings(t, expected, actual)
 }
