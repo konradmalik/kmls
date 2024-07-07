@@ -38,6 +38,7 @@ func handleMessage(logger *log.Logger, method string, contents []byte) {
 		var request lsp.InitializeRequest
 		if err := json.Unmarshal(contents, &request); err != nil {
 			logger.Printf("could not parse: %s", err)
+			return
 		}
 
 		logger.Printf("Connected to: %s %s", request.Params.ClientInfo.Name, request.Params.ClientInfo.Version)
@@ -50,6 +51,15 @@ func handleMessage(logger *log.Logger, method string, contents []byte) {
 			logger.Printf("could not respond with InitializeResponse: %s", err)
 		}
 		logger.Printf("Sent InitializeResponse")
+
+	case "textDocument/didOpen":
+		var request lsp.DidOpenTextDocumentNotification
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("could not parse: %s", err)
+			return
+		}
+
+		logger.Printf("Opened: %s", request.Params.TextDocument.URI)
 	}
 }
 
