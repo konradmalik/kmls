@@ -20,7 +20,7 @@
         {
           devShells.default = pkgs.mkShell {
             name = "kmls-dev";
-            packages = [ pkgs.go ];
+            packages = [ pkgs.go pkgs.golangci-lint ];
           };
           formatter = pkgs.nixfmt-rfc-style;
         };

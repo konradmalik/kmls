@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"log"
 	"os"
 
+	"github.com/konradmalik/kmls/lsp"
 	"github.com/konradmalik/kmls/rpc"
 )
 
@@ -17,13 +19,38 @@ func main() {
 	scanner.Split(rpc.Split)
 
 	for scanner.Scan() {
-		msg := scanner.Text()
-		handleMessage(logger, msg)
+		msg := scanner.Bytes()
+		method, contents, err := rpc.DecodeMessage(msg)
+		if err != nil {
+			logger.Printf("Got an error: %s", err)
+			continue
+		}
+
+		handleMessage(logger, method, contents)
 	}
 }
 
-func handleMessage(logger *log.Logger, msg any) {
-	logger.Println(msg)
+func handleMessage(logger *log.Logger, method string, contents []byte) {
+	logger.Printf("Received msg with method: %s", method)
+
+	switch method {
+	case "initialize":
+		var request lsp.InitializeRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("could not parse: %s", err)
+		}
+
+		logger.Printf("Connected to: %s %s", request.Params.ClientInfo.Name, request.Params.ClientInfo.Version)
+
+		msg := lsp.NewInitializeResponse(request.ID)
+		reply := rpc.EncodeMessage(msg)
+
+		writer := os.Stdout
+		if _, err := writer.Write([]byte(reply)); err != nil {
+			logger.Printf("could not respond with InitializeResponse: %s", err)
+		}
+		logger.Printf("Sent InitializeResponse")
+	}
 }
 
 func getLogger(filename string) *log.Logger {
