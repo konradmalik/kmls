@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"io"
 	"log"
 	"os"
 
@@ -20,6 +21,7 @@ func main() {
 	scanner.Split(rpc.Split)
 
 	state := analysis.NewState()
+	writer := os.Stdout
 
 	for scanner.Scan() {
 		msg := scanner.Bytes()
@@ -29,11 +31,17 @@ func main() {
 			continue
 		}
 
-		handleMessage(logger, state, method, contents)
+		handleMessage(logger, writer, state, method, contents)
 	}
 }
 
-func handleMessage(logger *log.Logger, state analysis.State, method string, contents []byte) {
+func writeResponse(writer io.Writer, msg any) error {
+	reply := rpc.EncodeMessage(msg)
+	_, err := writer.Write([]byte(reply))
+	return err
+}
+
+func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, method string, contents []byte) {
 	logger.Printf("Received msg with method: %s", method)
 
 	switch method {
@@ -47,10 +55,8 @@ func handleMessage(logger *log.Logger, state analysis.State, method string, cont
 		logger.Printf("Connected to: %s %s", request.Params.ClientInfo.Name, request.Params.ClientInfo.Version)
 
 		msg := lsp.NewInitializeResponse(request.ID)
-		reply := rpc.EncodeMessage(msg)
 
-		writer := os.Stdout
-		if _, err := writer.Write([]byte(reply)); err != nil {
+		if err := writeResponse(writer, msg); err != nil {
 			logger.Printf("could not respond with InitializeResponse: %s", err)
 		}
 		logger.Printf("Sent InitializeResponse")
@@ -74,6 +80,26 @@ func handleMessage(logger *log.Logger, state analysis.State, method string, cont
 		logger.Printf("Changed: %s", request.Params.TextDocument.URI)
 		for _, change := range request.Params.ContentChanges {
 			state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+		}
+	case "textDocument/hover":
+		var request lsp.HoverRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/hover: %s", err)
+			return
+		}
+
+		response := lsp.HoverResponse{
+			Response: lsp.Response{
+				RPC: "2.0",
+				ID:  &request.ID,
+			},
+			Result: lsp.HoverResult{
+				Contents: "Hello from LSP",
+			},
+		}
+
+		if err := writeResponse(writer, response); err != nil {
+			logger.Printf("could not respond with HoverResponse: %s", err)
 		}
 	}
 }

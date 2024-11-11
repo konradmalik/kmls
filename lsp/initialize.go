@@ -27,6 +27,7 @@ type InitializeResult struct {
 
 type ServerCapabilities struct {
 	TextDocumentSync *TextDocumentSyncKind `json:"textDocumentSync"`
+	HoverProvider    bool                  `json:"hoverProvider"`
 }
 
 type ServerInfo struct {
@@ -41,6 +42,7 @@ func NewInitializeResponse(id int) InitializeResponse {
 		Result: InitializeResult{
 			Capabilities: ServerCapabilities{
 				TextDocumentSync: &textDocumentSyncKind,
+				HoverProvider:    true,
 			},
 			ServerInfo: &ServerInfo{
 				Name:    "kmls",
