@@ -11,7 +11,7 @@ type TextDocumentIdentifier struct {
 	URI string `json:"uri"`
 }
 
-type VerisonTextDocumentItem struct {
+type VersionTextDocumentIdentifier struct {
 	TextDocumentIdentifier
 	Version int `json:"version"`
 }

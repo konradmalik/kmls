@@ -6,7 +6,7 @@ type DidChangeTextDocumentNotification struct {
 }
 
 type DidChangeTextDocumentParams struct {
-	TextDocument   VerisonTextDocumentItem          `json:"textDocument"`
+	TextDocument   VersionTextDocumentIdentifier    `json:"textDocument"`
 	ContentChanges []TextDocumentContentChangeEvent `json:"contentChanges"`
 }
 
