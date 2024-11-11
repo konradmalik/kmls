@@ -8,6 +8,6 @@ vim.api.nvim_create_autocmd("FileType", {
     pattern = "markdown",
     callback = function()
         local lsp = require("pde.lsp")
-        lsp.init(config, 0)
+        lsp.start(config, { bufnr = 0 })
     end,
 })
