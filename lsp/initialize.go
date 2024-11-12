@@ -26,8 +26,9 @@ type InitializeResult struct {
 }
 
 type ServerCapabilities struct {
-	TextDocumentSync *TextDocumentSyncKind `json:"textDocumentSync"`
-	HoverProvider    bool                  `json:"hoverProvider"`
+	TextDocumentSync   *TextDocumentSyncKind `json:"textDocumentSync"`
+	HoverProvider      bool                  `json:"hoverProvider"`
+	DefinitionProvider bool                  `json:"definitionProvider"`
 }
 
 type ServerInfo struct {
@@ -41,8 +42,9 @@ func NewInitializeResponse(id int) InitializeResponse {
 		Response: NewResponse(&id),
 		Result: InitializeResult{
 			Capabilities: ServerCapabilities{
-				TextDocumentSync: &textDocumentSyncKind,
-				HoverProvider:    true,
+				TextDocumentSync:   &textDocumentSyncKind,
+				HoverProvider:      true,
+				DefinitionProvider: true,
 			},
 			ServerInfo: &ServerInfo{
 				Name:    "kmls",

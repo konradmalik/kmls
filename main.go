@@ -93,6 +93,18 @@ func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, m
 		if err := writeResponse(writer, response); err != nil {
 			logger.Printf("could not respond with HoverResponse: %s", err)
 		}
+	case "textDocument/definition":
+		var request lsp.DefinitionRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/definition: %s", err)
+			return
+		}
+
+		location := state.Definition(request.Params.TextDocument.URI, request.Params.Position)
+		response := lsp.NewDefinitionResponse(request.ID, location)
+		if err := writeResponse(writer, response); err != nil {
+			logger.Printf("could not respond with DefinitionResponse: %s", err)
+		}
 	}
 }
 
