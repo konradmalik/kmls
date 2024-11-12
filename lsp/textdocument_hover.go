@@ -17,3 +17,12 @@ type HoverResponse struct {
 type HoverResult struct {
 	Contents string `json:"contents"`
 }
+
+func NewHoverResponse(id int, contents string) HoverResponse {
+	return HoverResponse{
+		Response: NewResponse(&id),
+		Result: HoverResult{
+			Contents: contents,
+		},
+	}
+}
