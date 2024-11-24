@@ -105,6 +105,18 @@ func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, m
 		if err := writeResponse(writer, response); err != nil {
 			logger.Printf("could not respond with DefinitionResponse: %s", err)
 		}
+	case "textDocument/codeAction":
+		var request lsp.CodeActionRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/codeAction: %s", err)
+			return
+		}
+
+		actions := state.CodeAction(request.ID, request.Params.TextDocument.URI)
+		response := lsp.NewCodeActionResponse(request.ID, actions)
+		if err := writeResponse(writer, response); err != nil {
+			logger.Printf("could not respond with CodeActionResponse: %s", err)
+		}
 	}
 }
 
