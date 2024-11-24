@@ -2,10 +2,10 @@ package lsp
 
 type CodeActionRequest struct {
 	Request
-	Params TextDocumentCodeActionParams `json:"params"`
+	Params CodeActionParams `json:"params"`
 }
 
-type TextDocumentCodeActionParams struct {
+type CodeActionParams struct {
 	TextDocument TextDocumentIdentifier `json:"textDocument"`
 	Range        Range                  `json:"range"`
 	Context      CodeActionContext      `json:"context"`

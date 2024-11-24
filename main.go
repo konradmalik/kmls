@@ -62,7 +62,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, m
 		logger.Printf("Sent InitializeResponse")
 
 	case "textDocument/didOpen":
-		var request lsp.DidOpenTextDocumentNotification
+		var request lsp.DidOpenNotification
 		if err := json.Unmarshal(contents, &request); err != nil {
 			logger.Printf("textDocument/didOpen: %s", err)
 			return
@@ -71,7 +71,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, m
 		logger.Printf("Opened: %s", request.Params.TextDocument.URI)
 		state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
 	case "textDocument/didChange":
-		var request lsp.DidChangeTextDocumentNotification
+		var request lsp.DidChangeNotification
 		if err := json.Unmarshal(contents, &request); err != nil {
 			logger.Printf("textDocument/didChange: %s", err)
 			return
