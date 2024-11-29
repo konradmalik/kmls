@@ -53,7 +53,7 @@ func (s *State) CodeAction(id int, uri string) []lsp.CodeAction {
 			replaceChange := map[string][]lsp.TextEdit{}
 			replaceChange[uri] = []lsp.TextEdit{
 				{
-					Range:   LineRange(row, idx, idx+len("VS Code")),
+					Range:   lineRange(row, idx, idx+len("VS Code")),
 					NewText: "Neovim",
 				},
 			}
@@ -66,7 +66,7 @@ func (s *State) CodeAction(id int, uri string) []lsp.CodeAction {
 			censorChange := map[string][]lsp.TextEdit{}
 			censorChange[uri] = []lsp.TextEdit{
 				{
-					Range:   LineRange(row, idx, idx+len("VS Code")),
+					Range:   lineRange(row, idx, idx+len("VS Code")),
 					NewText: "VS C*ode",
 				},
 			}
@@ -81,7 +81,19 @@ func (s *State) CodeAction(id int, uri string) []lsp.CodeAction {
 	return actions
 }
 
-func LineRange(line, start, end int) lsp.Range {
+func (s *State) Completion(d int, uri string) []lsp.CompletionItem {
+	items := []lsp.CompletionItem{
+		{
+			Label:         "Neovim (BTW)",
+			Detail:        "Very cool editor",
+			Documentation: "A better VIM",
+		},
+	}
+
+	return items
+}
+
+func lineRange(line, start, end int) lsp.Range {
 	return lsp.Range{
 		Start: lsp.Position{
 			Line:      line,
