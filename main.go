@@ -69,7 +69,14 @@ func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, m
 		}
 
 		logger.Printf("Opened: %s", request.Params.TextDocument.URI)
-		state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
+		diagnostics := state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
+		msg := lsp.NewPublishDiagnosticsNotification(lsp.PublishDiagnosticsParams{
+			URI:         request.Params.TextDocument.URI,
+			Diagnostics: diagnostics,
+		})
+		if err := writeResponse(writer, msg); err != nil {
+			logger.Printf("could not respond with Diagnostics: %s", err)
+		}
 	case "textDocument/didChange":
 		var request lsp.DidChangeNotification
 		if err := json.Unmarshal(contents, &request); err != nil {
@@ -79,7 +86,14 @@ func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, m
 
 		logger.Printf("Changed: %s", request.Params.TextDocument.URI)
 		for _, change := range request.Params.ContentChanges {
-			state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+			diagnostics := state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+			msg := lsp.NewPublishDiagnosticsNotification(lsp.PublishDiagnosticsParams{
+				URI:         request.Params.TextDocument.URI,
+				Diagnostics: diagnostics,
+			})
+			if err := writeResponse(writer, msg); err != nil {
+				logger.Printf("could not respond with Diagnostics: %s", err)
+			}
 		}
 	case "textDocument/hover":
 		var request lsp.HoverRequest

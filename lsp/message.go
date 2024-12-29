@@ -27,3 +27,10 @@ func NewResponse(id *int) Response {
 		ID:  id,
 	}
 }
+
+func NewNotification(method string) Notification {
+	return Notification{
+		RPC:    "2.0",
+		Method: method,
+	}
+}
